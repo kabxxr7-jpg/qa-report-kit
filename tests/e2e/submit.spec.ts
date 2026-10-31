@@ -15,6 +15,27 @@ test.describe("placing the order", () => {
     expect(await ordersFor(request, email)).toHaveLength(1);
   });
 
+  test("TC-065 a second submit while the first is still being sent is ignored, even when the button cannot be clicked", async ({ shop, page, request, email }) => {
+    // A disabled button stops mouse and keyboard, but a script, an extension or autofill can still submit the form.
+    await page.route("**/api/orders", async (route) => {
+      if (route.request().method() !== "POST") return route.continue();
+      await new Promise((r) => setTimeout(r, 500));
+      return route.continue();
+    });
+    const posts: string[] = [];
+    page.on("request", (r) => r.method() === "POST" && r.url().endsWith("/api/orders") && posts.push(r.url()));
+    await shop.add("Sourdough loaf", 1);
+    await shop.fillDetails();
+    await shop.submit();
+    await expect(page.getByRole("button", { name: "Placing order..." })).toBeDisabled();
+    await page.evaluate(() => (document.getElementById("order-form") as HTMLFormElement).requestSubmit());
+    await page.evaluate(() => (document.getElementById("order-form") as HTMLFormElement).requestSubmit());
+    await expect(shop.confirmation).toBeVisible();
+    await page.waitForLoadState("networkidle");
+    expect(posts).toHaveLength(1);
+    expect(await ordersFor(request, email)).toHaveLength(1);
+  });
+
   test("TC-061 while the order is being sent the button is disabled and says so", async ({ shop, page }) => {
     await page.route("**/api/orders", async (route) => {
       if (route.request().method() !== "POST") return route.continue();

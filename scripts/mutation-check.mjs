@@ -75,7 +75,7 @@ const MUTANTS = [
   { id: "date-picker-min-removed", file: "app/public/app.js", desc: "the date picker no longer limits the earliest date", find: "dateInput.min = addDays(todayIso(), 1);\n", replace: "" },
   // server (app/server.mjs)
   { id: "server-ignores-code", file: "app/server.mjs", desc: "the server never applies the discount", find: "const percent = discountPercent(payload.code) ?? 0;", replace: "const percent = 0;" },
-  { id: "server-no-size-limit", file: "app/server.mjs", desc: "oversize bodies are not refused", find: "if (size > MAX_BODY) tooLarge = true;", replace: "" },
+  { id: "server-no-size-limit", file: "app/server.mjs", desc: "oversize bodies are not refused", find: "if (size > MAX_BODY) tooLarge = true;", replace: "if (false) tooLarge = true;" },
   { id: "server-accepts-any-content-type", file: "app/server.mjs", desc: "non-JSON requests are parsed anyway", find: 'if (!String(req.headers["content-type"] ?? "").startsWith("application/json")) {', replace: 'if (false) {' },
   { id: "server-path-escape", file: "app/server.mjs", desc: "paths may climb out of public/", find: 'if (!file.startsWith(PUBLIC_DIR + path.sep)) return sendJson(res, 404, { error: "Not found." });', replace: "" },
   // markup and style
@@ -119,7 +119,11 @@ function failuresFromJson(file, kind) {
     }
   } else {
     const walk = (suite) => {
-      for (const spec of suite.specs ?? []) if (!spec.ok) out.push({ file: suite.file ?? spec.file, title: spec.title });
+      // Only tests that really failed count: tests cut short by --max-failures are "interrupted", not failed.
+      for (const spec of suite.specs ?? []) {
+        const failed = (spec.tests ?? []).some((t) => (t.results ?? []).some((r) => r.status === "failed" || r.status === "timedOut"));
+        if (failed) out.push({ file: suite.file ?? spec.file, title: spec.title });
+      }
       for (const child of suite.suites ?? []) walk(child);
     };
     for (const s of json.suites ?? []) walk(s);
@@ -128,13 +132,13 @@ function failuresFromJson(file, kind) {
 }
 
 /** Runs one layer of the suite in `dir`. */
-async function runLayer(dir, kind, port, { only = "", timeoutMs = RUN_TIMEOUT_MS } = {}) {
+async function runLayer(dir, kind, port, { only = "", timeoutMs = RUN_TIMEOUT_MS, stopAtFirst = true } = {}) {
   const jsonFile = path.join(dir, `${kind}-result.json`);
   rmSync(jsonFile, { force: true });
   const env = { BUILD: "", QA_PORT: String(port), QA_WORKERS: "2", PLAYWRIGHT_JSON_OUTPUT_NAME: jsonFile };
   const argv = kind === "unit"
-    ? [path.join(dir, ...VITEST), "run", "--bail", "1", "--reporter=json", `--outputFile=${jsonFile}`, ...(only ? [only] : [])]
-    : [path.join(dir, ...PLAYWRIGHT), "test", "--max-failures=1", "--reporter=json", ...(only ? [only] : [])];
+    ? [path.join(dir, ...VITEST), "run", ...(stopAtFirst ? ["--bail", "1"] : []), "--reporter=json", `--outputFile=${jsonFile}`, ...(only ? [only] : [])]
+    : [path.join(dir, ...PLAYWRIGHT), "test", ...(stopAtFirst ? ["--max-failures=1"] : []), "--reporter=json", ...(only ? [only] : [])];
   const started = Date.now();
   const r = await runNode(argv, { cwd: dir, env, timeoutMs });
   const failures = r.timedOut ? [] : failuresFromJson(jsonFile, kind);
@@ -150,10 +154,11 @@ async function evaluate(dir, port) {
     if (r.timedOut) return { status: "TIMEOUT", by: `${kind} run cut off after ${Math.round(RUN_TIMEOUT_MS / 60000)} min (not a kill)`, leftover };
     if (r.code === 0 && r.failures && r.failures.length === 0) continue; // this layer saw nothing; try the next
     if (!r.failures || r.failures.length === 0) return { status: "INCONCLUSIVE", by: `${kind} run exited ${r.code} without a failing test (crash?)`, leftover };
-    // A kill only counts if the same test fails again when its file is run on its own.
+    // A kill only counts if the same test fails again when its file is run on its own (all of its tests, so which one
+    // fails first in a parallel run does not matter).
     const first = r.failures[0];
     const fileArg = kind === "unit" ? first.file : path.join("tests", "e2e", path.basename(first.file));
-    const again = await runLayer(dir, kind, port, { only: fileArg });
+    const again = await runLayer(dir, kind, port, { only: fileArg, stopAtFirst: false });
     leftover += again.leftover;
     if (again.timedOut) return { status: "TIMEOUT", by: `confirmation run of ${fileArg} timed out (not a kill)`, leftover };
     const reproduced = again.failures?.some((f) => f.title === first.title);
