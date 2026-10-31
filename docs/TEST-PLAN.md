@@ -7,7 +7,7 @@ Fictional app, written for this repository (`app/`). Nothing here describes a re
 | Version of the plan | 1.0 |
 | Application under test | `app/` (the clean build) and `app-buggy/` (the same app with 10 planted defects, used to check the tests themselves) |
 | Author | the repository owner |
-| Automated suite | `tests/e2e` (Playwright, 101 tests) and `tests/unit` (vitest, 91 tests) |
+| Automated suite | `tests/e2e` (Playwright, 103 tests) and `tests/unit` (vitest, 91 tests) |
 
 ## 1. Scope
 
