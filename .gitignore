@@ -1,0 +1,9 @@
+node_modules/
+test-results/
+playwright-report/
+.mutation-work/
+.env
+.env.*
+.DS_Store
+dist/
+coverage/

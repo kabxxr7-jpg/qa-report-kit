@@ -1,0 +1,27 @@
+{
+  "name": "qa-report-kit",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "QA portfolio kit: a fictional bakery order form, a ranked test plan, a Playwright regression suite, professional bug reports, and a mutation check that shows the suite catches planted breakages.",
+  "scripts": {
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "vitest run",
+    "test:e2e": "playwright test",
+    "test:buggy": "node scripts/buggy-run.mjs",
+    "typecheck": "tsc --noEmit",
+    "serve": "node app/server.mjs",
+    "serve:buggy": "node app-buggy/server.mjs",
+    "buggy:build": "node scripts/make-buggy.mjs",
+    "buggy:check": "node scripts/make-buggy.mjs --check",
+    "evidence": "node scripts/capture-evidence.mjs",
+    "mutation": "node scripts/mutation-check.mjs",
+    "mutation:selftest": "node scripts/mutation-check.mjs --selftest"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "@types/node": "^26.6.6",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.12"
+  }
+}
