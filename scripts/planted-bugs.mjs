@@ -22,7 +22,7 @@ export const BUGS = [
     id: "BUG-003",
     title: "Double-clicking Place order creates two orders",
     severity: "S2",
-    caughtBy: ["TC-060", "TC-061"],
+    caughtBy: ["TC-060", "TC-061", "TC-065"],
     edits: [
       { file: "public/app.js", find: "  if (submitting) return;\n", replace: "" },
       { file: "public/app.js", find: '  placeBtn.disabled = true;\n  placeBtn.textContent = "Placing order...";\n', replace: '  placeBtn.textContent = "Placing order...";\n' },
