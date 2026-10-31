@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Corner Crust Bakery - Order for delivery</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1>Corner Crust Bakery</h1>
+    <p>Fresh bread and pastries, delivered. This is a fictional shop used for software testing practice.</p>
+  </header>
+
+  <main class="layout">
+    <form id="order-form" class="card" novalidate>
+      <section aria-labelledby="h-bakes">
+        <h2 id="h-bakes">1. Choose your bakes</h2>
+        <div class="field">
+          <label for="product">Product</label>
+          <select id="product" name="product"></select>
+        </div>
+        <div class="field">
+          <label for="qty">Quantity</label>
+          <input id="qty" name="qty" type="number" inputmode="numeric" value="1" aria-describedby="err-qty">
+          <p id="err-qty" class="error" role="alert"></p>
+        </div>
+        <button type="button" id="add-btn" class="btn secondary">Add to order</button>
+      </section>
+
+      <section aria-labelledby="h-code">
+        <h2 id="h-code">2. Discount code</h2>
+        <div class="field">
+          <label for="code">Code (optional)</label>
+          <div class="inline">
+            <input id="code" name="code" type="text" autocomplete="off" aria-describedby="err-code code-status">
+            <button type="button" id="apply-btn" class="btn secondary">Apply</button>
+          </div>
+          <p id="err-code" class="error" role="alert"></p>
+          <p id="code-status" class="status" role="status"></p>
+        </div>
+      </section>
+
+      <section aria-labelledby="h-details">
+        <h2 id="h-details">3. Delivery details</h2>
+        <div class="field">
+          <label for="name">Full name</label>
+          <input id="name" name="name" type="text" autocomplete="name" aria-describedby="err-name">
+          <p id="err-name" class="error" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="email" aria-describedby="err-email">
+          <p id="err-email" class="error" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="delivery-date">Delivery date</label>
+          <input id="delivery-date" name="delivery-date" type="date" aria-describedby="err-delivery-date date-hint">
+          <p id="date-hint" class="hint">Tomorrow up to 30 days ahead. No Sunday delivery.</p>
+          <p id="err-delivery-date" class="error" role="alert"></p>
+        </div>
+      </section>
+
+      <p id="err-form" class="error" role="alert"></p>
+      <button type="submit" id="place-btn" class="btn primary">Place order</button>
+    </form>
+
+    <aside id="summary" class="card" aria-labelledby="h-summary">
+      <h2 id="h-summary">Order summary</h2>
+      <p id="summary-name" class="summary-name" hidden>Order for <span id="summary-name-value"></span></p>
+      <p id="empty" class="empty">Your order is empty.</p>
+      <ul id="lines" class="lines"></ul>
+      <dl class="totals">
+        <div><dt>Subtotal</dt><dd data-testid="subtotal">&pound;0.00</dd></div>
+        <div id="discount-row" hidden><dt id="discount-label">Discount</dt><dd data-testid="discount">&pound;0.00</dd></div>
+        <div><dt>Delivery</dt><dd data-testid="delivery">&pound;0.00</dd></div>
+        <div class="grand"><dt>Total</dt><dd data-testid="total">&pound;0.00</dd></div>
+      </dl>
+      <p class="hint">Free delivery on orders of &pound;20.00 or more after discount.</p>
+    </aside>
+
+    <section id="confirmation" class="card" hidden aria-labelledby="h-done" tabindex="-1">
+      <h2 id="h-done">Thank you, <span id="done-name"></span></h2>
+      <p>Your order number is <strong id="order-id"></strong>.</p>
+      <p>Total to pay on delivery: <strong id="done-total"></strong></p>
+      <p>Delivery on <strong id="done-date"></strong>. Confirmation address: <strong id="done-email"></strong>.</p>
+      <button type="button" id="again-btn" class="btn secondary">Start a new order</button>
+    </section>
+  </main>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
