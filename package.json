@@ -5,10 +5,11 @@
   "type": "module",
   "description": "QA portfolio kit: a fictional bakery order form, a ranked test plan, a Playwright regression suite, professional bug reports, and a mutation check that shows the suite catches planted breakages.",
   "scripts": {
-    "test": "npm run test:unit && npm run test:e2e",
+    "test": "npm run check:docs && npm run test:unit && npm run test:e2e",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
     "test:buggy": "node scripts/buggy-run.mjs",
+    "check:docs": "node scripts/check-docs.mjs",
     "typecheck": "tsc --noEmit",
     "serve": "node app/server.mjs",
     "serve:buggy": "node app-buggy/server.mjs",
