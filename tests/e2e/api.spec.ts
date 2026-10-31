@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+import path from "node:path";
 import { test, expect, DATES, MSG } from "./fixtures";
 
 // The server must not trust the page: these calls skip the page entirely.
@@ -96,6 +98,14 @@ test.describe("order API", () => {
     expect((await request.get("/..%2Fserver.mjs")).status()).toBe(404);
     expect((await request.get("/%2e%2e/server.mjs")).status()).toBe(404);
     expect((await request.get("/server.mjs")).status()).toBe(404);
+  });
+
+  test("TC-103 a path that climbs out of public/ to a real servable file is refused", async ({ request }) => {
+    // A .js file that exists outside public/ (the extension allow-list alone would not stop this one).
+    const target = path.resolve("node_modules/playwright-core/index.js");
+    expect(existsSync(target), "the file used for this check must exist").toBe(true);
+    const res = await request.get("/..%2F..%2Fnode_modules%2Fplaywright-core%2Findex.js");
+    expect(res.status()).toBe(404);
   });
 
   test("TC-104 the product list matches what the page shows", async ({ request }) => {
