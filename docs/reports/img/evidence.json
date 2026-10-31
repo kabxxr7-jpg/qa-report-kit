@@ -1,0 +1,114 @@
+{
+  "browser": "Google Chrome 156.0.8078.76",
+  "build": "app-buggy",
+  "fixedToday": "2026-11-04",
+  "attempts": 3,
+  "bugs": {
+    "BUG-001": {
+      "reproduced": "3 of 3",
+      "observed": {
+        "afterTwoApplies": {
+          "subtotal": "£9.00",
+          "discount": "-£1.80",
+          "delivery": "£3.50",
+          "total": "£10.70"
+        },
+        "confirmationTotal": "£11.60"
+      }
+    },
+    "BUG-002": {
+      "reproduced": "3 of 3",
+      "observed": {
+        "before": {
+          "subtotal": "£20.00",
+          "discount": "-£2.00",
+          "delivery": "£3.50",
+          "total": "£21.50"
+        },
+        "afterRemove": {
+          "subtotal": "£20.00",
+          "discount": "-£2.00",
+          "delivery": "£3.50",
+          "total": "£21.50"
+        },
+        "linesAfterRemove": [
+          "2 × Sourdough loaf - £9.00Remove"
+        ]
+      }
+    },
+    "BUG-003": {
+      "reproduced": "3 of 3",
+      "observed": {
+        "ordersStored": 2,
+        "ids": [
+          "BK-1004",
+          "BK-1005"
+        ]
+      }
+    },
+    "BUG-004": {
+      "reproduced": "3 of 3",
+      "observed": {
+        "confirmedDeliveryDate": "2026-11-03",
+        "fixedToday": "2026-11-04",
+        "ordersStored": 1
+      }
+    },
+    "BUG-005": {
+      "reproduced": "3 of 3",
+      "observed": {
+        "lines": [
+          "0 × Sourdough loaf - £0.00Remove"
+        ],
+        "qtyError": ""
+      }
+    },
+    "BUG-006": {
+      "reproduced": "3 of 3",
+      "observed": {
+        "accepted": true,
+        "confirmationAddress": "a@b"
+      }
+    },
+    "BUG-007": {
+      "reproduced": "3 of 3",
+      "observed": {
+        "totals": {
+          "subtotal": "£2.75",
+          "discount": "-£0.27",
+          "delivery": "£3.50",
+          "total": "£5.98"
+        }
+      }
+    },
+    "BUG-008": {
+      "reproduced": "3 of 3",
+      "observed": {
+        "firstTabStop": "place-btn"
+      }
+    },
+    "BUG-009": {
+      "reproduced": "3 of 3",
+      "observed": {
+        "errorsAfterEmptySubmit": {
+          "name": "Enter your name (2 to 60 characters).",
+          "email": "Enter a valid email address, like name@example.com.",
+          "date": "Choose a delivery date."
+        },
+        "errorsAfterTypingName": {
+          "name": "",
+          "email": "",
+          "date": ""
+        },
+        "emailFieldStillEmpty": true
+      }
+    },
+    "BUG-010": {
+      "reproduced": "3 of 3",
+      "observed": {
+        "pageWidth": 545,
+        "windowWidth": 390
+      }
+    }
+  }
+}
