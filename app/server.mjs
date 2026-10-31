@@ -12,6 +12,8 @@ const PUBLIC_DIR = path.join(here, "public");
 const PORT = Number(process.env.PORT ?? 4173);
 const ORDER_DELAY_MS = Number(process.env.ORDER_DELAY_MS ?? 150);
 const MAX_BODY = 10_000;
+// BAKERY_TODAY=YYYY-MM-DD fixes the date the server validates against (used by the test suite so results do not depend on the calendar).
+const today = () => process.env.BAKERY_TODAY ?? todayIso();
 
 const TYPES = /** @type {Record<string, string>} */ ({
   ".html": "text/html; charset=utf-8",
@@ -35,18 +37,15 @@ function sendJson(res, status, body) {
 function readBody(req) {
   return new Promise((resolve, reject) => {
     let size = 0;
+    let tooLarge = false;
     /** @type {Buffer[]} */
     const chunks = [];
     req.on("data", (c) => {
       size += c.length;
-      if (size > MAX_BODY) {
-        reject(Object.assign(new Error("too large"), { status: 413 }));
-        req.destroy();
-        return;
-      }
-      chunks.push(c);
+      if (size > MAX_BODY) tooLarge = true;
+      else chunks.push(c);
     });
-    req.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
+    req.on("end", () => (tooLarge ? reject(Object.assign(new Error("too large"), { status: 413 })) : resolve(Buffer.concat(chunks).toString("utf8"))));
     req.on("error", reject);
   });
 }
@@ -67,7 +66,7 @@ async function createOrder(req, res) {
   if (payload === null || typeof payload !== "object" || Array.isArray(payload)) {
     return sendJson(res, 400, { error: "Invalid JSON." });
   }
-  const errors = validateOrder(payload, todayIso());
+  const errors = validateOrder(payload, today());
   if (Object.keys(errors).length > 0) return sendJson(res, 422, { errors });
 
   await new Promise((r) => setTimeout(r, ORDER_DELAY_MS));
