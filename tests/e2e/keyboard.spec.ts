@@ -38,6 +38,12 @@ test.describe("keyboard use", () => {
     await page.keyboard.type(email);
     await page.keyboard.press("Tab"); // date (day, month, year segments; the browser is set to en-GB)
     await page.keyboard.type("06112026");
+    // The segment order follows the browser's own locale, not the page's: macOS Chrome here is day-first, the Linux runner is
+    // month-first. If the first try landed on the wrong date, go back to the first segment and type the other order.
+    if ((await page.locator("#delivery-date").inputValue()) !== "2026-11-06") {
+      await page.locator("#delivery-date").focus();
+      await page.keyboard.type("11062026");
+    }
     // The date field has more tab stops (its picker button) before Place order.
     for (let i = 0; i < 4 && (await page.evaluate(() => document.activeElement?.id)) !== "place-btn"; i++) await page.keyboard.press("Tab");
     await expect(shop.placeButton).toBeFocused();
