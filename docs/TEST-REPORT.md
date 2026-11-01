@@ -79,7 +79,7 @@ Severity and priority are my judgement for a fictional shop. Two things I would 
 - Performance, load and security (the malformed-request and path cases are functional checks only).
 - Persistence, restart behaviour, concurrent users on one server beyond what 4 or 8 parallel test workers do.
 - Other locales, other time zones, the real clock, daylight-saving changes.
-- The GitHub Actions workflow has never been run.
+- The GitHub Actions workflow ran after publishing: the first run failed TC-081 on the Linux runner (date segment order, a test error), the run after the fix was green. The mutation check is manual-only in CI and has not been run there.
 
 ## 7. Mutation check
 
